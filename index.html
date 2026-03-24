@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Space Runner 3D</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23000814'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%2300e5ff' stroke-width='2.5'/%3E%3Ccircle cx='16' cy='16' r='2' fill='%2300e5ff'/%3E%3Cline x1='16' y1='2' x2='16' y2='9' stroke='%2300e5ff' stroke-width='2'/%3E%3Cline x1='16' y1='23' x2='16' y2='30' stroke='%2300e5ff' stroke-width='2'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Babylon.js core -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <!-- Babylon.js post-processing -->
+    <script src="https://cdn.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
+    <!-- GSAP for smooth tweens -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+
+    <!-- 3D Render target -->
+    <canvas id="renderCanvas"></canvas>
+
+    <!-- ================================================
+         OVERLAYS UI (managed by UIManager.js)
+    ================================================ -->
+
+    <!-- SCREEN: Main Menu -->
+    <div id="screen-menu" class="screen active">
+        <div class="menu-title">
+            <span class="title-main">SPACE RUNNER</span>
+            <span class="title-sub">3D</span>
+        </div>
+
+        <!-- Character selection -->
+        <div class="char-select">
+            <span class="char-select-label">SELECT CHARACTER</span>
+            <div class="char-options">
+                <div class="char-option active" data-char="0">
+                    <div class="char-preview char-astronaut"></div>
+                    <span>ASTRONAUT</span>
+                </div>
+                <div class="char-option" data-char="1">
+                    <div class="char-preview char-alien"></div>
+                    <span>ALIEN</span>
+                </div>
+                <div class="char-option" data-char="2">
+                    <div class="char-preview char-robot"></div>
+                    <span>ROBOT</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game mode selection -->
+        <div class="gamemode-select">
+            <span class="char-select-label">GAME MODE</span>
+            <div class="gamemode-options">
+                <div class="gamemode-option active" data-gamemode="classic">
+                    <div class="gamemode-icon">&#8734;</div>
+                    <span>CLASSIC</span>
+                    <span class="gamemode-desc">Endless</span>
+                </div>
+                <div class="gamemode-option" data-gamemode="timeattack">
+                    <div class="gamemode-icon">&#9203;</div>
+                    <span>TIME ATTACK</span>
+                    <span class="gamemode-desc">90 seconds</span>
+                </div>
+                <div class="gamemode-option" data-gamemode="hardcore">
+                    <div class="gamemode-icon">&#9760;</div>
+                    <span>HARDCORE</span>
+                    <span class="gamemode-desc">Max speed &bull; 1 jump</span>
+                </div>
+                <div class="gamemode-option" data-gamemode="zen">
+                    <div class="gamemode-icon">&#9775;</div>
+                    <span>ZEN</span>
+                    <span class="gamemode-desc">No death</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mode selection -->
+        <div class="mode-select">
+            <button class="btn btn-primary" id="btn-solo">SOLO</button>
+            <button class="btn btn-secondary" id="btn-multi">2 PLAYERS</button>
+        </div>
+
+        <div class="controls-hint">
+            <span>SPACE / TAP = JUMP &nbsp;|&nbsp; DOWN = DUCK &nbsp;|&nbsp; DOUBLE JUMP ALLOWED</span>
+            <span class="controls-hint-p2">P2: W = JUMP &nbsp;|&nbsp; S = DUCK</span>
+        </div>
+
+        <div class="highscore-display">
+            <span>BEST: <span id="menu-highscore">0</span></span>
+        </div>
+    </div>
+
+    <!-- SCREEN: HUD (in-game) -->
+    <div id="screen-hud" class="screen">
+        <div class="hud-top">
+            <div class="hud-score">
+                <span class="hud-label">SCORE</span>
+                <span class="hud-value" id="hud-score">0</span>
+            </div>
+            <div class="hud-multiplier" id="hud-multiplier">
+                <span>x1</span>
+            </div>
+            <div class="hud-best">
+                <span class="hud-label">BEST</span>
+                <span class="hud-value" id="hud-best">0</span>
+            </div>
+        </div>
+
+        <!-- Power-up status bar -->
+        <div class="hud-powerup" id="hud-powerup">
+            <div class="powerup-icon" id="powerup-icon"></div>
+            <div class="powerup-timer-bar">
+                <div class="powerup-timer-fill" id="powerup-timer-fill"></div>
+            </div>
+        </div>
+
+        <!-- Time Attack countdown -->
+        <div class="hud-timer hidden" id="hud-timer">
+            <span class="hud-label">TIME</span>
+            <span class="hud-value" id="hud-timer-value">90</span>
+        </div>
+
+        <!-- Multi-player scores -->
+        <div class="hud-multi hidden" id="hud-multi">
+            <div class="hud-p1">
+                <span class="hud-label">P1</span>
+                <span class="hud-value" id="hud-score-p1">0</span>
+            </div>
+            <div class="hud-p2">
+                <span class="hud-label">P2</span>
+                <span class="hud-value" id="hud-score-p2">0</span>
+            </div>
+        </div>
+
+        <!-- Speed indicator -->
+        <div class="hud-speed">
+            <span class="hud-label">SPEED</span>
+            <div class="speed-bar">
+                <div class="speed-fill" id="speed-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN: Pause -->
+    <div id="screen-pause" class="screen">
+        <div class="overlay-panel">
+            <h2>PAUSED</h2>
+            <button class="btn btn-primary" id="btn-resume">RESUME</button>
+            <button class="btn btn-ghost" id="btn-quit-pause">QUIT</button>
+        </div>
+    </div>
+
+    <!-- SCREEN: Game Over -->
+    <div id="screen-gameover" class="screen">
+        <div class="overlay-panel gameover-panel">
+            <h2 class="gameover-title">GAME OVER</h2>
+            <div class="score-summary">
+                <div class="score-row">
+                    <span class="score-label">SCORE</span>
+                    <span class="score-value" id="go-score">0</span>
+                </div>
+                <div class="score-row">
+                    <span class="score-label">BEST</span>
+                    <span class="score-value" id="go-best">0</span>
+                </div>
+                <div class="score-row new-record hidden" id="go-newrecord">
+                    <span>NEW RECORD!</span>
+                </div>
+            </div>
+            <!-- Multi-player result -->
+            <div class="multi-result hidden" id="go-multi">
+                <div class="score-row">
+                    <span class="score-label">P1</span>
+                    <span class="score-value" id="go-p1">0</span>
+                </div>
+                <div class="score-row">
+                    <span class="score-label">P2</span>
+                    <span class="score-value" id="go-p2">0</span>
+                </div>
+                <div class="winner-label" id="go-winner"></div>
+            </div>
+            <div class="gameover-actions">
+                <button class="btn btn-primary" id="btn-retry">PLAY AGAIN</button>
+                <button class="btn btn-ghost" id="btn-menu">MENU</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN: Loading -->
+    <div id="screen-loading" class="screen active">
+        <div class="loading-content">
+            <div class="loading-title">SPACE RUNNER 3D</div>
+            <div class="loading-bar-wrap">
+                <div class="loading-bar-fill" id="loading-bar-fill"></div>
+            </div>
+            <div class="loading-text" id="loading-text">Initializing engine...</div>
+        </div>
+    </div>
+
+    <!-- Bootstrap -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

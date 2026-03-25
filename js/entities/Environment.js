@@ -17,17 +17,17 @@ const CFG = {
 
     STAR_COUNT:       4000,
     STAR_RADIUS:       450,
-    WARP_STAR_COUNT:   600,
+    WARP_STAR_COUNT:   900,
 
     RING_COUNT:   12,
     RING_SPACING: 30,
 
-    PLANET_PARALLAX:  0.09,
-    NEBULA_PARALLAX:  0.03,
-    GALAXY_PARALLAX:  0.01,
+    PLANET_PARALLAX:  0.50,
+    NEBULA_PARALLAX:  0.14,
+    GALAXY_PARALLAX:  0.04,
 
-    PLANET_RECYCLE_Z: -100,
-    PLANET_RESET_Z:   1300,
+    PLANET_RECYCLE_Z: -150,
+    PLANET_RESET_Z:   1400,
 };
 
 export class Environment {
@@ -132,22 +132,22 @@ export class Environment {
     _buildWarpStream() {
         const warp = new BABYLON.ParticleSystem('warpStream', CFG.WARP_STAR_COUNT, this._scene);
         warp.emitter    = new BABYLON.Vector3(0, 5, 50);
-        warp.minEmitBox = new BABYLON.Vector3(-70, -50, 0);
-        warp.maxEmitBox = new BABYLON.Vector3( 70,  50, 250);
+        warp.minEmitBox = new BABYLON.Vector3(-90, -60, 0);
+        warp.maxEmitBox = new BABYLON.Vector3( 90,  60, 300);
 
-        warp.color1    = new BABYLON.Color4(0.85, 0.92, 1.0, 0.9);
-        warp.color2    = new BABYLON.Color4(1.0,  1.0,  1.0, 0.6);
+        warp.color1    = new BABYLON.Color4(0.85, 0.95, 1.0, 1.0);
+        warp.color2    = new BABYLON.Color4(0.50, 0.80, 1.0, 0.7);
         warp.colorDead = new BABYLON.Color4(0, 0, 0, 0);
 
-        warp.minSize      = 0.05;
-        warp.maxSize      = 0.22;
-        warp.minLifeTime  = 0.4;
-        warp.maxLifeTime  = 1.2;
-        warp.emitRate     = 180;
-        warp.direction1   = new BABYLON.Vector3(-0.08, -0.05, -1);
-        warp.direction2   = new BABYLON.Vector3( 0.08,  0.05, -1);
+        warp.minSize      = 0.06;
+        warp.maxSize      = 0.32;
+        warp.minLifeTime  = 0.35;
+        warp.maxLifeTime  = 1.1;
+        warp.emitRate     = 280;
+        warp.direction1   = new BABYLON.Vector3(-0.10, -0.06, -1);
+        warp.direction2   = new BABYLON.Vector3( 0.10,  0.06, -1);
         warp.minEmitPower = 2;
-        warp.maxEmitPower = 6;
+        warp.maxEmitPower = 7;
         warp.updateSpeed  = 0.02;
         warp.blendMode    = BABYLON.ParticleSystem.BLENDMODE_ADD;
 
@@ -209,84 +209,125 @@ export class Environment {
     // ── Planets ───────────────────────────────────────────────────────────────────
 
     _buildPlanets() {
-        // Earth + Moon system
-        this._addPlanet({
-            name: 'earth',
-            pos: { x: -45, y: 18, z: 280 },
-            diam: 28,
-            diff: new BABYLON.Color3(0.08, 0.30, 0.55),
-            emis: new BABYLON.Color3(0.04, 0.12, 0.25),
-            rotY: 0.00012,
-            atmo:   { diam: 30.5, color: new BABYLON.Color3(0.2, 0.5, 0.9),    alpha: 0.18 },
-            clouds: { diam: 29.2, color: new BABYLON.Color3(0.85, 0.9, 0.95),  alpha: 0.28 },
-        });
+        // Moon — very close, dramatic flyby
         this._addPlanet({
             name: 'moon',
-            pos: { x: -28, y: 8, z: 240 },
-            diam: 8,
+            pos: { x: -22, y: 7, z: 175 },
+            diam: 10,
             diff: new BABYLON.Color3(0.45, 0.45, 0.45),
             emis: new BABYLON.Color3(0.08, 0.08, 0.08),
             rotY: 0.00005,
         });
+        // Earth + cloud + atmosphere (close dramatic pass)
+        this._addPlanet({
+            name: 'earth',
+            pos: { x: -40, y: 20, z: 215 },
+            diam: 32,
+            diff: new BABYLON.Color3(0.08, 0.30, 0.55),
+            emis: new BABYLON.Color3(0.04, 0.12, 0.25),
+            rotY: 0.00012,
+            atmo:   { diam: 35,   color: new BABYLON.Color3(0.2, 0.5, 0.9),   alpha: 0.18 },
+            clouds: { diam: 33.5, color: new BABYLON.Color3(0.85, 0.9, 0.95), alpha: 0.30 },
+        });
         // Mars
         this._addPlanet({
             name: 'mars',
-            pos: { x: 55, y: 22, z: 380 },
-            diam: 18,
+            pos: { x: 50, y: 18, z: 295 },
+            diam: 22,
             diff: new BABYLON.Color3(0.62, 0.22, 0.06),
             emis: new BABYLON.Color3(0.15, 0.04, 0.01),
             rotY: 0.00014,
-            atmo: { diam: 19.5, color: new BABYLON.Color3(0.8, 0.4, 0.2), alpha: 0.12 },
+            atmo: { diam: 24, color: new BABYLON.Color3(0.8, 0.4, 0.2), alpha: 0.12 },
+        });
+        // Saturn with rings
+        this._addPlanet({
+            name: 'saturn',
+            pos: { x: 90, y: 30, z: 380 },
+            diam: 36,
+            diff: new BABYLON.Color3(0.82, 0.72, 0.50),
+            emis: new BABYLON.Color3(0.10, 0.08, 0.03),
+            rotY: 0.00018,
+            ring: { diam: 92, color: new BABYLON.Color3(0.75, 0.62, 0.38), alpha: 0.55 },
         });
         // Jupiter with equatorial bands
         this._addPlanet({
             name: 'jupiter',
-            pos: { x: -80, y: 35, z: 520 },
-            diam: 48,
+            pos: { x: -82, y: 38, z: 460 },
+            diam: 54,
             diff: new BABYLON.Color3(0.72, 0.52, 0.32),
             emis: new BABYLON.Color3(0.10, 0.06, 0.02),
             rotY: 0.00025,
             bands: true,
         });
-        // Saturn with rings
-        this._addPlanet({
-            name: 'saturn',
-            pos: { x: 90, y: 28, z: 440 },
-            diam: 32,
-            diff: new BABYLON.Color3(0.82, 0.72, 0.50),
-            emis: new BABYLON.Color3(0.10, 0.08, 0.03),
-            rotY: 0.00018,
-            ring: { diam: 82, color: new BABYLON.Color3(0.75, 0.62, 0.38), alpha: 0.52 },
-        });
         // Neptune
         this._addPlanet({
             name: 'neptune',
-            pos: { x: -55, y: 42, z: 640 },
-            diam: 22,
+            pos: { x: -55, y: 44, z: 560 },
+            diam: 26,
             diff: new BABYLON.Color3(0.10, 0.20, 0.75),
             emis: new BABYLON.Color3(0.02, 0.05, 0.22),
             rotY: 0.00016,
-            atmo: { diam: 23.5, color: new BABYLON.Color3(0.15, 0.35, 0.9), alpha: 0.20 },
+            atmo: { diam: 28, color: new BABYLON.Color3(0.15, 0.35, 0.9), alpha: 0.22 },
+        });
+        // Purple gas giant
+        this._addPlanet({
+            name: 'gasGiant',
+            pos: { x: -112, y: 52, z: 640 },
+            diam: 44,
+            diff: new BABYLON.Color3(0.38, 0.08, 0.58),
+            emis: new BABYLON.Color3(0.12, 0.02, 0.20),
+            rotY: 0.00020,
+            atmo: { diam: 47, color: new BABYLON.Color3(0.55, 0.1, 0.8), alpha: 0.24 },
         });
         // Pulsar star
         this._addPlanet({
             name: 'pulsar',
-            pos: { x: 30, y: 60, z: 750 },
-            diam: 10,
+            pos: { x: 34, y: 62, z: 710 },
+            diam: 12,
             diff: new BABYLON.Color3(0.8,  0.9, 1.0),
             emis: new BABYLON.Color3(0.6,  0.8, 1.0),
             rotY: 0.0008,
             isPulsar: true,
         });
-        // Purple gas giant
+        // Ice world (new)
         this._addPlanet({
-            name: 'gasGiant',
-            pos: { x: -110, y: 50, z: 680 },
-            diam: 40,
-            diff: new BABYLON.Color3(0.38, 0.08, 0.58),
-            emis: new BABYLON.Color3(0.12, 0.02, 0.20),
-            rotY: 0.00020,
-            atmo: { diam: 43, color: new BABYLON.Color3(0.55, 0.1, 0.8), alpha: 0.22 },
+            name: 'iceWorld',
+            pos: { x: 72, y: 28, z: 820 },
+            diam: 24,
+            diff: new BABYLON.Color3(0.75, 0.90, 1.0),
+            emis: new BABYLON.Color3(0.10, 0.22, 0.40),
+            rotY: 0.00010,
+            atmo: { diam: 26, color: new BABYLON.Color3(0.7, 0.88, 1.0), alpha: 0.22 },
+        });
+        // Lava / volcanic planet (new)
+        this._addPlanet({
+            name: 'lava',
+            pos: { x: -42, y: 22, z: 940 },
+            diam: 20,
+            diff: new BABYLON.Color3(0.70, 0.12, 0.02),
+            emis: new BABYLON.Color3(0.55, 0.08, 0.01),
+            rotY: 0.00022,
+            atmo: { diam: 22, color: new BABYLON.Color3(1.0, 0.3, 0.05), alpha: 0.30 },
+        });
+        // Red giant star (new — enormous)
+        this._addPlanet({
+            name: 'redGiant',
+            pos: { x: 28, y: 58, z: 1080 },
+            diam: 64,
+            diff: new BABYLON.Color3(0.85, 0.18, 0.03),
+            emis: new BABYLON.Color3(0.60, 0.10, 0.02),
+            rotY: 0.00006,
+            atmo: { diam: 70, color: new BABYLON.Color3(1.0, 0.35, 0.05), alpha: 0.30 },
+        });
+        // Alien cyan striped world (new)
+        this._addPlanet({
+            name: 'alienWorld',
+            pos: { x: -90, y: 36, z: 1200 },
+            diam: 30,
+            diff: new BABYLON.Color3(0.02, 0.60, 0.55),
+            emis: new BABYLON.Color3(0.01, 0.18, 0.18),
+            rotY: 0.00017,
+            bands: true,
         });
     }
 
@@ -391,12 +432,15 @@ export class Environment {
 
     _buildNebula() {
         const defs = [
-            { x: -120, y:  40, z: 500, w: 300, h: 200, ry: -0.20, r: 0.40, g: 0.10, b: 0.60, a: 0.055 },
-            { x:  150, y:  60, z: 420, w: 250, h: 180, ry:  0.15, r: 0.00, g: 0.50, b: 0.60, a: 0.048 },
-            { x:  -80, y:  80, z: 650, w: 200, h: 300, ry: -0.35, r: 0.60, g: 0.05, b: 0.10, a: 0.042 },
-            { x:  200, y:  20, z: 380, w: 280, h: 220, ry:  0.25, r: 0.05, g: 0.20, b: 0.70, a: 0.045 },
-            { x:  -30, y: 100, z: 720, w: 320, h: 260, ry: -0.10, r: 0.30, g: 0.00, b: 0.50, a: 0.038 },
-            { x:  100, y:  55, z: 580, w: 240, h: 200, ry:  0.30, r: 0.00, g: 0.40, b: 0.40, a: 0.040 },
+            { x: -120, y:  40, z: 500, w: 300, h: 200, ry: -0.20, r: 0.40, g: 0.10, b: 0.60, a: 0.070 },
+            { x:  150, y:  60, z: 420, w: 250, h: 180, ry:  0.15, r: 0.00, g: 0.50, b: 0.60, a: 0.062 },
+            { x:  -80, y:  80, z: 650, w: 200, h: 300, ry: -0.35, r: 0.60, g: 0.05, b: 0.10, a: 0.055 },
+            { x:  200, y:  20, z: 380, w: 280, h: 220, ry:  0.25, r: 0.05, g: 0.20, b: 0.70, a: 0.058 },
+            { x:  -30, y: 100, z: 720, w: 320, h: 260, ry: -0.10, r: 0.30, g: 0.00, b: 0.50, a: 0.052 },
+            { x:  100, y:  55, z: 580, w: 240, h: 200, ry:  0.30, r: 0.00, g: 0.40, b: 0.40, a: 0.055 },
+            { x: -160, y:  70, z: 820, w: 350, h: 280, ry: -0.18, r: 0.15, g: 0.40, b: 0.80, a: 0.048 },
+            { x:  130, y:  90, z: 970, w: 300, h: 240, ry:  0.22, r: 0.50, g: 0.00, b: 0.30, a: 0.045 },
+            { x:  -60, y: 120, z:1120, w: 380, h: 300, ry: -0.08, r: 0.05, g: 0.55, b: 0.45, a: 0.042 },
         ];
 
         for (const n of defs) {
@@ -520,11 +564,16 @@ export class Environment {
                 entry.mesh.material.emissiveColor.b = 1.0;
             }
 
-            // Recycle planet back to far distance
+            // Recycle planet back to far distance; shift X to avoid static lanes
             if (entry.mesh.position.z < CFG.PLANET_RECYCLE_Z) {
                 const dz = CFG.PLANET_RESET_Z;
                 entry.mesh.position.z += dz;
-                for (const child of entry.children) child.position.z += dz;
+                const xShift = (Math.random() - 0.5) * 40;
+                entry.mesh.position.x += xShift;
+                for (const child of entry.children) {
+                    child.position.z += dz;
+                    child.position.x = entry.mesh.position.x;
+                }
             }
         }
 

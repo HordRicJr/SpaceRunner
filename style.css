@@ -503,6 +503,62 @@ html, body {
 }
 
 /* ============================================================
+   HUD INTRO COUNTDOWN
+============================================================ */
+.hud-intro {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(56px, 14vw, 110px);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--color-primary);
+    text-shadow: var(--glow-primary);
+    pointer-events: none;
+    z-index: 20;
+    animation: introPop 0.7s ease-out forwards;
+}
+
+.hud-intro.hidden { display: none; }
+
+/* Tutorial hint shown below the countdown number */
+.hud-intro-hint {
+    position: fixed;
+    top: calc(50% + clamp(44px, 9vw, 78px) + 22px);
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: clamp(12px, 2vw, 18px);
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.90);
+    text-shadow: 0 0 10px rgba(0, 200, 255, 0.55);
+    background: rgba(0, 0, 0, 0.50);
+    border: 1px solid rgba(0, 200, 255, 0.28);
+    border-radius: 999px;
+    padding: 7px 24px;
+    pointer-events: none;
+    z-index: 20;
+    white-space: nowrap;
+    animation: hintFadeIn 0.45s ease-out forwards;
+}
+
+.hud-intro-hint.hidden { display: none; }
+
+@keyframes hintFadeIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes introPop {
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(1.8); }
+    35%  { opacity: 1; transform: translate(-50%, -50%) scale(1.0); }
+    80%  { opacity: 1; transform: translate(-50%, -50%) scale(1.0); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.75); }
+}
+
+/* ============================================================
    OVERLAY PANELS (Pause / Game Over)
 ============================================================ */
 .overlay-panel {

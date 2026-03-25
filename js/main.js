@@ -47,36 +47,36 @@ async function init() {
 
     // UI needs audio for mute button
     ui = new UIManager(audio);
-    ui.updateLoading(10, 'Initializing engine...');
+    ui.updateLoading(10, 'Initialisation du moteur...');
 
     const canvas = document.getElementById('renderCanvas');
     engine       = Engine.getInstance();
     engine.init(canvas);
 
-    ui.updateLoading(25, 'Building scene...');
+    ui.updateLoading(25, 'Construction de la sc\u00e8ne...');
     sceneManager = SceneManager.getInstance();
     scene        = sceneManager.create(engine.raw);
 
-    ui.updateLoading(40, 'Loading environment...');
+    ui.updateLoading(40, 'Chargement de l\'environnement...');
     environment  = new Environment(scene);
 
-    ui.updateLoading(55, 'Preparing game systems...');
+    ui.updateLoading(55, 'Pr\u00e9paration des syst\u00e8mes...');
     gameLoop     = new GameLoop();
     gameLoop.attach(scene);
     scorer       = new Scorer();
     spawner      = new Spawner(scene);
 
-    ui.updateLoading(70, 'Building obstacle pool...');
+    ui.updateLoading(70, 'G\u00e9n\u00e9ration des obstacles...');
     obstacles = new ObstacleManager(scene);
     // PowerUpManager needs spawner reference — created after spawner is ready
     powerUps  = new PowerUpManager(scene, spawner);
 
-    ui.updateLoading(80, 'Setting up effects...');
+    ui.updateLoading(80, 'Configuration des effets...');
     particles = new ParticleManager(scene);
     postFX    = new PostProcessing(scene);
     weather   = new WeatherSystem(scene, sceneManager, environment);
 
-    ui.updateLoading(90, 'Wiring input...');
+    ui.updateLoading(90, 'Configuration des contr\u00f4les...');
     input.attach(canvas);
 
     // Wire pause toggle
@@ -90,7 +90,7 @@ async function init() {
         }
     });
 
-    ui.updateLoading(100, 'Ready!');
+    ui.updateLoading(100, 'Pr\u00eat\u00a0!');
 
     // Wire UI button actions
     gs.on('ui:start',  onUIStart);
@@ -137,7 +137,8 @@ const CHAR_TYPES = ['astronaut', 'alien', 'robot'];
 function startGame(charIndices) {
     // Clean up previous session
     destroyPlayers();
-    spawner.reset();
+    spawner.setMultiplayer(isMulti);
+    spawner.reset({ firstObstacleDist: 28 });
 
     const char0 = CHAR_TYPES[charIndices[0]] || 'astronaut';
     const char1 = CHAR_TYPES[charIndices[1]] || 'astronaut';
@@ -183,6 +184,7 @@ function startGame(charIndices) {
     gs.transition(STATE.PLAYING);
     audio.unlock();
     audio.startMusic();
+    ui.showIntroCountdown();
 }
 
 function onUIResume() {

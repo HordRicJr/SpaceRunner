@@ -32,17 +32,17 @@
 
         <!-- Character selection -->
         <div class="char-select">
-            <span class="char-select-label">SELECT CHARACTER</span>
+            <span class="char-select-label">CHOISISSEZ UN PERSONNAGE</span>
             <div class="char-options">
-                <div class="char-option active" data-char="0">
+                <div class="char-option active" data-char="0" data-player="1">
                     <div class="char-preview char-astronaut"></div>
-                    <span>ASTRONAUT</span>
+                    <span>ASTRONAUTE</span>
                 </div>
-                <div class="char-option" data-char="1">
+                <div class="char-option" data-char="1" data-player="1">
                     <div class="char-preview char-alien"></div>
                     <span>ALIEN</span>
                 </div>
-                <div class="char-option" data-char="2">
+                <div class="char-option" data-char="2" data-player="1">
                     <div class="char-preview char-robot"></div>
                     <span>ROBOT</span>
                 </div>
@@ -51,27 +51,27 @@
 
         <!-- Game mode selection -->
         <div class="gamemode-select">
-            <span class="char-select-label">GAME MODE</span>
+            <span class="char-select-label">MODE DE JEU</span>
             <div class="gamemode-options">
                 <div class="gamemode-option active" data-gamemode="classic">
                     <div class="gamemode-icon">&#8734;</div>
-                    <span>CLASSIC</span>
-                    <span class="gamemode-desc">Endless</span>
+                    <span>CLASSIQUE</span>
+                    <span class="gamemode-desc">Sans fin</span>
                 </div>
                 <div class="gamemode-option" data-gamemode="timeattack">
                     <div class="gamemode-icon">&#9203;</div>
-                    <span>TIME ATTACK</span>
-                    <span class="gamemode-desc">90 seconds</span>
+                    <span>CONTRE LA MONTRE</span>
+                    <span class="gamemode-desc">90 secondes</span>
                 </div>
                 <div class="gamemode-option" data-gamemode="hardcore">
                     <div class="gamemode-icon">&#9760;</div>
                     <span>HARDCORE</span>
-                    <span class="gamemode-desc">Max speed &bull; 1 jump</span>
+                    <span class="gamemode-desc">Vitesse max &bull; 1 saut</span>
                 </div>
                 <div class="gamemode-option" data-gamemode="zen">
                     <div class="gamemode-icon">&#9775;</div>
                     <span>ZEN</span>
-                    <span class="gamemode-desc">No death</span>
+                    <span class="gamemode-desc">Sans mort</span>
                 </div>
             </div>
         </div>
@@ -79,41 +79,41 @@
         <!-- Mode selection -->
         <div class="mode-select">
             <button class="btn btn-primary" id="btn-solo">SOLO</button>
-            <button class="btn btn-secondary" id="btn-multi">2 PLAYERS</button>
+            <button class="btn btn-secondary" id="btn-multi">2 JOUEURS</button>
         </div>
 
         <div class="controls-guide">
-            <span class="controls-guide-title">HOW TO PLAY</span>
+            <span class="controls-guide-title">COMMENT JOUER</span>
             <div class="controls-row">
-                <span class="ctrl-key">SPACE</span>
+                <span class="ctrl-key">ESPACE</span>
                 <span class="ctrl-sep">/</span>
                 <span class="ctrl-key">&#8593;</span>
                 <span class="ctrl-sep">/</span>
                 <span class="ctrl-key">TAP</span>
                 <span class="ctrl-sep">=</span>
-                <span class="ctrl-action">JUMP</span>
+                <span class="ctrl-action">SAUTER</span>
                 <span class="ctrl-sep">&nbsp;&nbsp;&bull;&nbsp;&nbsp;</span>
                 <span class="ctrl-key">&#8595;</span>
                 <span class="ctrl-sep">=</span>
-                <span class="ctrl-action">DUCK</span>
+                <span class="ctrl-action">SE BAISSER</span>
                 <span class="ctrl-sep">&nbsp;&nbsp;&bull;&nbsp;&nbsp;</span>
-                <span class="ctrl-key">DOUBLE JUMP</span>
-                <span class="ctrl-action">allowed</span>
+                <span class="ctrl-key">DOUBLE SAUT</span>
+                <span class="ctrl-action">autoris&#233;</span>
             </div>
             <div class="controls-row controls-row-p2">
-                <span class="ctrl-key ctrl-key-p2">P2</span>
+                <span class="ctrl-key ctrl-key-p2">J2</span>
                 <span class="ctrl-key ctrl-key-p2">W</span>
                 <span class="ctrl-sep">=</span>
-                <span class="ctrl-action">JUMP</span>
+                <span class="ctrl-action">SAUTER</span>
                 <span class="ctrl-sep">&nbsp;&nbsp;&bull;&nbsp;&nbsp;</span>
                 <span class="ctrl-key ctrl-key-p2">S</span>
                 <span class="ctrl-sep">=</span>
-                <span class="ctrl-action">DUCK</span>
+                <span class="ctrl-action">SE BAISSER</span>
             </div>
         </div>
 
         <div class="highscore-display">
-            <span>BEST: <span id="menu-highscore">0</span></span>
+            <span>RECORD&nbsp;: <span id="menu-highscore">0</span></span>
         </div>
     </div>
 
@@ -128,7 +128,7 @@
                 <span>x1</span>
             </div>
             <div class="hud-best">
-                <span class="hud-label">BEST</span>
+                <span class="hud-label">RECORD</span>
                 <span class="hud-value" id="hud-best">0</span>
             </div>
         </div>
@@ -141,9 +141,13 @@
             </div>
         </div>
 
+        <!-- Intro countdown overlay -->
+        <div class="hud-intro hidden" id="hud-intro"></div>
+        <div class="hud-intro-hint hidden" id="hud-intro-hint"></div>
+
         <!-- Time Attack countdown -->
         <div class="hud-timer hidden" id="hud-timer">
-            <span class="hud-label">TIME</span>
+            <span class="hud-label">TEMPS</span>
             <span class="hud-value" id="hud-timer-value">90</span>
         </div>
 
@@ -161,7 +165,7 @@
 
         <!-- Speed indicator -->
         <div class="hud-speed">
-            <span class="hud-label">SPEED</span>
+            <span class="hud-label">VITESSE</span>
             <div class="speed-bar">
                 <div class="speed-fill" id="speed-fill"></div>
             </div>
@@ -171,9 +175,9 @@
     <!-- SCREEN: Pause -->
     <div id="screen-pause" class="screen">
         <div class="overlay-panel">
-            <h2>PAUSED</h2>
-            <button class="btn btn-primary" id="btn-resume">RESUME</button>
-            <button class="btn btn-ghost" id="btn-quit-pause">QUIT</button>
+            <h2>EN PAUSE</h2>
+            <button class="btn btn-primary" id="btn-resume">REPRENDRE</button>
+            <button class="btn btn-ghost" id="btn-quit-pause">QUITTER</button>
         </div>
     </div>
 
@@ -187,11 +191,11 @@
                     <span class="score-value" id="go-score">0</span>
                 </div>
                 <div class="score-row">
-                    <span class="score-label">BEST</span>
+                    <span class="score-label">RECORD</span>
                     <span class="score-value" id="go-best">0</span>
                 </div>
                 <div class="score-row new-record hidden" id="go-newrecord">
-                    <span>NEW RECORD!</span>
+                    <span>NOUVEAU RECORD&nbsp;!</span>
                 </div>
             </div>
             <!-- Multi-player result -->
@@ -207,7 +211,7 @@
                 <div class="winner-label" id="go-winner"></div>
             </div>
             <div class="gameover-actions">
-                <button class="btn btn-primary" id="btn-retry">PLAY AGAIN</button>
+                <button class="btn btn-primary" id="btn-retry">REJOUER</button>
                 <button class="btn btn-ghost" id="btn-menu">MENU</button>
             </div>
         </div>

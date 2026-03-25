@@ -124,21 +124,34 @@ export class Spawner {
     _trySpawnObstacle(distance, speed) {
         if (distance < this._nextObstacleDist) return;
 
-        const lane = this._lanes[Math.floor(Math.random() * this._lanes.length)];
         const kind = this._randomObstacleKind(speed);
-        const mesh = this._getFromPool(this._obstaclePool);
-        if (!mesh) return;
 
-        mesh.metadata.kind = kind;
-        this._configureObstacle(mesh, kind, lane);
-        mesh.setEnabled(true);
-        mesh.metadata.active = true;
-        this._activeObstacles.push(mesh);
+        if (this._multiplayer) {
+            // In multi mode: spawn one obstacle per lane so each player faces one
+            for (const lane of this._lanes) {
+                const mesh = this._getFromPool(this._obstaclePool);
+                if (!mesh) continue;
+                mesh.metadata.kind = kind;
+                this._configureObstacle(mesh, kind, lane);
+                mesh.setEnabled(true);
+                mesh.metadata.active = true;
+                this._activeObstacles.push(mesh);
+                this._state.emit('spawner:obstacle', { mesh, kind, lane });
+            }
+        } else {
+            const lane = this._lanes[Math.floor(Math.random() * this._lanes.length)];
+            const mesh = this._getFromPool(this._obstaclePool);
+            if (!mesh) return;
+            mesh.metadata.kind = kind;
+            this._configureObstacle(mesh, kind, lane);
+            mesh.setEnabled(true);
+            mesh.metadata.active = true;
+            this._activeObstacles.push(mesh);
+            this._state.emit('spawner:obstacle', { mesh, kind, lane });
+        }
 
         const interval = this._rnd(CFG.OBSTACLE_INTERVAL_MIN, CFG.OBSTACLE_INTERVAL_MAX);
         this._nextObstacleDist = distance + interval;
-
-        this._state.emit('spawner:obstacle', { mesh, kind, lane });
     }
 
     _trySpawnPowerup(distance, speed) {
@@ -228,15 +241,25 @@ export class Spawner {
         }
     }
 
+    /**
+     * Update lane configuration for multi-player mode.
+     * Must be called before reset() when switching modes.
+     * @param {boolean} isMulti
+     */
+    setMultiplayer(isMulti) {
+        this._multiplayer = isMulti;
+        this._lanes = isMulti ? CFG.LANES_MULTI : CFG.LANES_SOLO;
+    }
+
     get activeObstacles() { return this._activeObstacles; }
     get activePowerups()  { return this._activePowerups; }
 
-    reset() {
+    reset(opts = {}) {
         [...this._activeObstacles].forEach(m => this._returnObstacle(m));
         [...this._activePowerups].forEach(m  => this._returnPowerup(m));
         this._activeObstacles = [];
         this._activePowerups  = [];
-        this._nextObstacleDist = CFG.OBSTACLE_INTERVAL_MIN;
+        this._nextObstacleDist = opts.firstObstacleDist ?? CFG.OBSTACLE_INTERVAL_MIN;
         this._nextPowerupDist  = CFG.POWERUP_INTERVAL_MIN + 30;
     }
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * UIManager.js
  * Manages all DOM overlays: loading screen, menu, HUD, pause, game-over.
  * Wires UI events (button clicks, character selection) to GameState.
@@ -60,7 +60,9 @@ export class UIManager {
             btnMenu:         document.getElementById('btn-menu'),
 
             hudTimer:        document.getElementById('hud-timer'),
-            hudTimerValue:   document.getElementById('hud-timer-value')
+            hudTimerValue:   document.getElementById('hud-timer-value'),
+            hudIntro:        document.getElementById('hud-intro'),
+            hudIntroHint:    document.getElementById('hud-intro-hint')
         };
 
         this._bindButtons();
@@ -316,9 +318,9 @@ export class UIManager {
             if (this._el.goScoreP2) this._el.goScoreP2.textContent = String(Math.floor(scores[1])).padStart(5, '0');
             if (this._el.goWinner) {
                 if (winner === -1) {
-                    this._el.goWinner.textContent = 'Draw!';
+                    this._el.goWinner.textContent = '\u00c9galit\u00e9\u00a0!';
                 } else {
-                    this._el.goWinner.textContent = `Player ${winner + 1} wins!`;
+                    this._el.goWinner.textContent = `Joueur ${winner + 1} gagne\u00a0!`;
                 }
             }
         }
@@ -326,6 +328,44 @@ export class UIManager {
 
     updateBest(best) {
         if (this._el.hudBest) this._el.hudBest.textContent = String(Math.floor(best)).padStart(6, '0');
+    }
+
+    showIntroCountdown() {
+        const el   = this._el.hudIntro;
+        const hint = this._el.hudIntroHint;
+        if (!el) return;
+
+        // Show hint once at start; persists through 3/2/1 then hides at PARTEZ
+        if (hint) {
+            hint.textContent = '\u2b06\uFE0E ESPACE\u00A0/\u00A0\u2191 \u2014 sautez par-dessus les obstacles\u00A0!';
+            hint.classList.remove('hidden');
+            hint.style.animation = 'none';
+            void hint.offsetWidth;
+            hint.style.animation = '';
+        }
+
+        const steps = ['3', '2', '1', 'PARTEZ\u00A0!'];
+        let i = 0;
+
+        const next = () => {
+            if (i >= steps.length) {
+                el.classList.add('hidden');
+                if (hint) hint.classList.add('hidden');
+                return;
+            }
+            const isLast = (i === steps.length - 1);
+            el.textContent = steps[i++];
+            el.classList.remove('hidden');
+            // Reset animation by forcing reflow
+            el.style.animation = 'none';
+            void el.offsetWidth;
+            el.style.animation = '';
+            // Hide hint when PARTEZ! appears
+            if (isLast && hint) hint.classList.add('hidden');
+            setTimeout(next, isLast ? 900 : 700);
+        };
+
+        next();
     }
 
     // ----------------------
